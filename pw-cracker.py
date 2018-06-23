@@ -42,15 +42,17 @@ def print_usage_and_exit():
 
 
 def crack_password(username, password, dictionary_file):
-    salt = password.split('$')[SALT_INDEX]
-    with open(dictionary_file) as dictionary_file:
-        for candidate in dictionary_file:
-            candidate = candidate.rstrip('\n')
-            candidate_hash = sha512_crypt.using(rounds=5000).using(salt=salt).hash(candidate.encode('utf-8'))
-            if candidate_hash == password:
-                print('[+] Found password: [' + candidate + '] for: ' + username)
-                found = True
-                return
+    salt = password.split('$')
+    if len(salt) > SALT_INDEX:
+        salt = salt[SALT_INDEX]
+        with open(dictionary_file) as dictionary_file:
+            for candidate in dictionary_file:
+                candidate = candidate.rstrip('\n')
+                candidate_hash = sha512_crypt.using(rounds=5000).using(salt=salt).hash(candidate.encode('utf-8'))
+                if candidate_hash == password:
+                    print('[+] Found password: [' + candidate + '] for: ' + username)
+                    found = True
+                    return
     print('[-] No password found for: ' + username)
 
 
